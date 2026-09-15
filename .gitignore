@@ -7,3 +7,6 @@ coverage/
 .env.*
 tsconfig.app.tsbuildinfo
 *.tsbuildinfo
+
+# Screenshots dropped in the repo root by hand
+/label-lens-*.png

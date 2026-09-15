@@ -12,6 +12,10 @@ yourself. Label Lens does — in about five seconds, with no backend, no account
 
 ---
 
+![The verdict screen for Nutella](docs/screenshots/verdict.png)
+
+---
+
 ## What it does
 
 - **Scans a barcode** with the device camera, or takes one typed in.
@@ -48,6 +52,8 @@ Open Food Facts is crowd-sourced, so the data sometimes lies — one of the bund
 claims 52 g of fibre per 100 g, which would earn it a bonus it has not earned. The app detects
 macronutrients that cannot add up, says so, and withholds all bonuses for that product while
 still applying its penalties.
+
+![A product whose nutrition data cannot be correct](docs/screenshots/implausible-data.png)
 
 **This is not medical or dietary advice.** It is a transparent arithmetic summary of published
 reference values, and the app says so on the verdict screen.
