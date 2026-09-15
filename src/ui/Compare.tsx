@@ -6,6 +6,7 @@
  * answers is only "which of these two do I put in the basket".
  */
 
+import { summarizeEnergy } from '../core/energy.js';
 import { evaluate } from '../core/score.js';
 import type { Product, Profile } from '../core/types.js';
 import type { HistoryEntry } from '../adapters/storage.js';
@@ -33,6 +34,8 @@ function buildRows(left: Product, right: Product, profile: Profile): Row[] {
   const leftVerdict = evaluate(left, profile);
   const rightVerdict = evaluate(right, profile);
   const unit = left.kind === 'drink' && right.kind === 'drink' ? 'ml' : 'g';
+  const leftEnergy = summarizeEnergy(left);
+  const rightEnergy = summarizeEnergy(right);
 
   const rows: Row[] = [
     {
@@ -41,6 +44,19 @@ function buildRows(left: Product, right: Product, profile: Profile): Row[] {
       right: String(rightVerdict.score),
       winner:
         leftVerdict.score === rightVerdict.score ? 0 : leftVerdict.score > rightVerdict.score ? -1 : 1,
+    },
+    {
+      label: `Energy / 100 ${unit}`,
+      left: leftEnergy.per100 === undefined ? '—' : `${Math.round(leftEnergy.per100)} kcal`,
+      right: rightEnergy.per100 === undefined ? '—' : `${Math.round(rightEnergy.per100)} kcal`,
+      winner: lowerWins(leftEnergy.per100, rightEnergy.per100),
+    },
+    {
+      label: 'Energy / pack',
+      left: leftEnergy.perPackage === undefined ? '—' : `${leftEnergy.perPackage} kcal`,
+      right: rightEnergy.perPackage === undefined ? '—' : `${rightEnergy.perPackage} kcal`,
+      // Packages differ in size, so a smaller total is not automatically the better buy.
+      winner: 0,
     },
   ];
 

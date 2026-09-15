@@ -254,6 +254,10 @@ export function App() {
                       <strong>{entry.product.name}</strong>
                       <span className="faint">
                         {entry.product.brand ?? entry.product.barcode}
+                        {entry.product.nutriments.energyKcal !== undefined &&
+                          ` · ${Math.round(entry.product.nutriments.energyKcal)} kcal / 100 ${
+                            entry.product.kind === 'drink' ? 'ml' : 'g'
+                          }`}
                         {entryVerdict.flags.length > 0 &&
                           ` · ${entryVerdict.flags.length} of your rules matched`}
                       </span>

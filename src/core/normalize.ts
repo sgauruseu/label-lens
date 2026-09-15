@@ -10,6 +10,7 @@
  */
 
 import { lookupAdditives } from './additives.js';
+import { parseQuantity } from './quantity.js';
 import type { IngredientAnalysis, Nutriments, Product, ProductKind } from './types.js';
 
 /** The shape of the fields we request from the API. Everything is optional on purpose. */
@@ -158,6 +159,7 @@ export function humanizeTag(tag: string): string {
 function readNutriments(raw: Record<string, unknown> | undefined): Nutriments {
   return {
     energyKcal: num(raw, 'energy-kcal_100g', 1000),
+    energyKj: num(raw, 'energy-kj_100g', 4000),
     fat: num(raw, 'fat_100g'),
     saturates: num(raw, 'saturated-fat_100g'),
     carbohydrates: num(raw, 'carbohydrates_100g'),
@@ -207,12 +209,14 @@ export function normalizeProduct(
       .find((n) => n && n.length > 0) ?? 'Unnamed product';
 
   const nutriments = readNutriments(off.nutriments);
+  const packageSize = parseQuantity(off.quantity);
 
   return {
     barcode: off.code ?? '',
     name,
     brand: off.brands?.split(',')[0]?.trim() || undefined,
     quantity: off.quantity?.trim() || undefined,
+    ...(packageSize ? { packageSize } : {}),
     imageUrl: off.image_front_small_url ?? off.image_front_url,
     kind: detectKind(off.categories_tags),
     nutriments,

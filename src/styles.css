@@ -708,3 +708,41 @@ select {
 .footer a {
   color: var(--text-dim);
 }
+
+/* ---------- energy ---------- */
+
+.energy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.energy-cell {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 13px 15px;
+}
+
+.energy-value {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  margin-bottom: 3px;
+}
+
+.energy-unit {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-left: 6px;
+  letter-spacing: 0;
+}
+
+.energy-share {
+  margin-top: 7px;
+  font-size: 12px;
+  color: var(--amber);
+}

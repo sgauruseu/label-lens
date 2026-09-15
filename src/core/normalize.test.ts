@@ -178,6 +178,38 @@ describe('normalizeProduct — data plausibility', () => {
   });
 });
 
+describe('normalizeProduct — package size', () => {
+  it('parses the net quantity of every captured fixture', () => {
+    const sizes = Object.keys(byBarcode).map((barcode) => {
+      const product = normalizeResponse(fixture(barcode), 'fixture');
+      return [product.name, product.packageSize?.amount, product.packageSize?.unit];
+    });
+    for (const [name, amount] of sizes) {
+      expect(amount, `${String(name)} has no readable package size`).toBeDefined();
+    }
+  });
+
+  it('reads Nutella as a 1 kg jar', () => {
+    const product = normalizeResponse(fixture('3017620425035'), 'fixture');
+    expect(product.packageSize).toMatchObject({ amount: 1000, unit: 'g' });
+  });
+
+  it('reads Coca-Cola as a 330 ml can', () => {
+    const product = normalizeResponse(fixture('5449000000996'), 'fixture');
+    expect(product.packageSize).toMatchObject({ amount: 330, unit: 'ml' });
+  });
+
+  it('reads "300 g e" past the estimated sign', () => {
+    const product = normalizeResponse(fixture('7622210449283'), 'fixture');
+    expect(product.packageSize).toMatchObject({ amount: 300, unit: 'g' });
+  });
+
+  it('leaves packageSize undefined when the quantity is unreadable', () => {
+    expect(normalizeProduct({ quantity: 'family size' }).packageSize).toBeUndefined();
+    expect(normalizeProduct({}).packageSize).toBeUndefined();
+  });
+});
+
 describe('end-to-end on captured fixtures', () => {
   const profile = makeProfile();
 

@@ -6,9 +6,9 @@ A food label tells you there are 56 g of sugar per 100 g and that the product co
 does not tell you whether that is a lot, what E322 is, or whether it breaks a rule you set for
 yourself. Label Lens does — in about five seconds, with no backend, no account and no tracking.
 
-**Live:** https://REPLACE_ME.github.io/label-lens/
+**Live:** https://sgauruseu.github.io/label-lens/
 
-![CI](https://github.com/REPLACE_ME/label-lens/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/sgauruseu/label-lens/actions/workflows/ci.yml/badge.svg)
 
 ---
 
@@ -19,6 +19,9 @@ yourself. Label Lens does — in about five seconds, with no backend, no account
 ## What it does
 
 - **Scans a barcode** with the device camera, or takes one typed in.
+- **Calories in the unit you think in.** Per 100 g, and for the whole package — a 1 kg jar of
+  Nutella is 5390 kcal, 270 % of the EU daily reference intake. The net quantity is parsed from
+  the label text, multipacks (`6 x 33 cl`) and decimal commas (`1,5 L`) included.
 - **Explains the score.** Every product starts at 100, and every point gained or lost is shown
   as a line item with its reason. There is no hidden model.
 - **Traffic lights** for fat, saturates, sugars and salt against the UK FSA front-of-pack
@@ -71,7 +74,7 @@ Dependencies point inward only: `ui → adapters → core`. An ESLint rule fails
 anything in `core/` imports an adapter, a component, React, or touches a browser global — the
 purity of the domain is enforced, not merely intended.
 
-That boundary is what makes the scoring engine testable: **155 unit tests, 99 % line coverage**
+That boundary is what makes the scoring engine testable: **198 unit tests, 99 % line coverage**
 on `src/core`, running in a plain Node environment with no DOM and no network.
 
 ## Running it

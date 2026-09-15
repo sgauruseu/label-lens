@@ -5,6 +5,8 @@
  * fetched and normalized. Nothing here knows about Open Food Facts, React, or the browser.
  */
 
+import type { PackageSize } from './quantity.js';
+
 /** Which reference thresholds apply. Drinks use roughly half the solid thresholds. */
 export type ProductKind = 'solid' | 'drink';
 
@@ -16,6 +18,8 @@ export type ProductKind = 'solid' | 'drink';
  */
 export interface Nutriments {
   energyKcal?: number;
+  /** Energy in kilojoules, the other figure every EU label carries. */
+  energyKj?: number;
   fat?: number;
   saturates?: number;
   carbohydrates?: number;
@@ -59,6 +63,8 @@ export interface Product {
   name: string;
   brand?: string;
   quantity?: string;
+  /** Net quantity parsed into a number, when the label text could be read. */
+  packageSize?: PackageSize;
   imageUrl?: string;
   kind: ProductKind;
   nutriments: Nutriments;

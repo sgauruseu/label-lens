@@ -36,7 +36,15 @@ Do not explain the app yet. Let the question sit.
 
 Click **Scan with camera**, hold the jar up to the lens. The verdict appears.
 
-> "Twenty-two out of a hundred. And here is every single point."
+> "Twenty-two out of a hundred."
+
+Point at the energy panel before scrolling further:
+
+> "And the jar is 5390 calories. Two hundred and seventy per cent of an adult's daily
+> reference intake. The label says 539 per 100 grams, which is true and tells you nothing —
+> nobody eats 100 grams of anything, they eat the jar."
+
+> "Here is every single point of that 22."
 
 Scroll the **How this score was reached** card slowly. Read three lines aloud:
 
@@ -90,7 +98,7 @@ Switch to the repository tab.
 > "Two and a half days, built with Claude Code. Three layers: a pure domain core with no
 > network, no DOM, no clock; adapters for everything impure; a thin UI.
 >
-> That boundary is enforced by a lint rule, not by good intentions — and it is what made **155
+> That boundary is enforced by a lint rule, not by good intentions — and it is what made **198
 > unit tests at 99 % coverage** on the scoring engine possible in two days.
 >
 > Every push runs typecheck, lint, tests and build, then deploys to GitHub Pages. No backend,

@@ -6,6 +6,8 @@
  * and not summarised — the whole point of the product is that the user can audit the score.
  */
 
+import { REFERENCE_INTAKE_KCAL, summarizeEnergy } from '../core/energy.js';
+import { formatPackageSize } from '../core/quantity.js';
 import type {
   Additive,
   NutrientAssessment,
@@ -104,6 +106,73 @@ function NutrientBar({ nutrient, unit }: { nutrient: NutrientAssessment; unit: s
   );
 }
 
+/**
+ * Energy panel.
+ *
+ * Per 100 g is what the label states; the whole-package figure is what people actually decide
+ * with. Both are shown, and the package figure is always labelled with the size it came from so
+ * it can never be mistaken for a serving.
+ */
+function EnergyPanel({ product }: { product: Product }) {
+  const energy = summarizeEnergy(product);
+  if (energy.per100 === undefined) {
+    return (
+      <div className="card">
+        <h3>Energy</h3>
+        <p className="faint" style={{ margin: 0 }}>
+          The database has no energy value for this product.
+        </p>
+      </div>
+    );
+  }
+
+  const kj = product.nutriments.energyKj;
+
+  return (
+    <div className="card">
+      <h3>Energy</h3>
+      <div className="energy-grid">
+        <div className="energy-cell">
+          <div className="energy-value">
+            {Math.round(energy.per100)}
+            <span className="energy-unit">kcal</span>
+          </div>
+          <div className="faint">
+            per 100 {energy.unit}
+            {kj !== undefined && ` · ${Math.round(kj)} kJ`}
+          </div>
+        </div>
+
+        {energy.perPackage !== undefined && product.packageSize && (
+          <div className="energy-cell">
+            <div className="energy-value">
+              {energy.perPackage.toLocaleString('en-GB')}
+              <span className="energy-unit">kcal</span>
+            </div>
+            <div className="faint">whole pack · {formatPackageSize(product.packageSize)}</div>
+            {energy.packageShareOfReference !== undefined && (
+              <div className="energy-share">
+                {energy.packageShareOfReference}% of the {REFERENCE_INTAKE_KCAL} kcal daily
+                reference intake
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      {energy.perPackage === undefined && product.quantity && (
+        <div className="faint" style={{ marginTop: 10 }}>
+          Net quantity "{product.quantity}" could not be read, so the whole-pack figure is not
+          shown.
+        </div>
+      )}
+      <div className="faint" style={{ marginTop: 10 }}>
+        The reference intake is the EU labelling figure for an average adult, not a personal
+        target.
+      </div>
+    </div>
+  );
+}
+
 function AdditiveCard({ additive }: { additive: Additive }) {
   return (
     <div className="additive">
@@ -173,6 +242,12 @@ export function VerdictView({
               {[product.brand, product.quantity].filter(Boolean).join(' · ') || product.barcode}
             </div>
             <div className="meta">
+              {product.nutriments.energyKcal !== undefined && (
+                <span className="pill">
+                  {Math.round(product.nutriments.energyKcal)} kcal / 100{' '}
+                  {product.kind === 'drink' ? 'ml' : 'g'}
+                </span>
+              )}
               {product.novaGroup && (
                 <span className="pill">
                   NOVA {product.novaGroup} — {NOVA_TEXT[product.novaGroup]}
@@ -192,6 +267,8 @@ export function VerdictView({
           {!verdict.lowData && <ScoreRing score={verdict.score} band={verdict.band} />}
         </div>
       </div>
+
+      <EnergyPanel product={product} />
 
       {verdict.lowData && (
         <div className="notice">
@@ -217,11 +294,9 @@ export function VerdictView({
         {verdict.nutrients.map((nutrient) => (
           <NutrientBar key={nutrient.key} nutrient={nutrient} unit={unit} />
         ))}
-        {product.nutriments.energyKcal !== undefined && (
+        {product.nutriments.addedSugars !== undefined && (
           <div className="faint" style={{ marginTop: 12 }}>
-            Energy {product.nutriments.energyKcal} kcal per 100 {unit}
-            {product.nutriments.addedSugars !== undefined &&
-              ` · added sugars ${product.nutriments.addedSugars} g`}
+            Added sugars {product.nutriments.addedSugars} g per 100 {unit}
           </div>
         )}
       </div>

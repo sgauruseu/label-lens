@@ -57,6 +57,7 @@ Three properties define the product:
 | F10 | Side-by-side compare of two products | Picked from history |
 | F11 | Offline fixture mode | Bundled real product responses; app fully usable with no network |
 | F12 | AI ingredient reading from a photo | Bring-your-own API key; parses an ingredient list into the same engine |
+| F13 | Energy per 100 g **and per package** | Net quantity parsed from the label text; package total shown against the EU reference intake |
 
 ### Explicitly out of scope
 
@@ -111,6 +112,23 @@ exceed its carbohydrates, or whose saturates exceed its total fat.
 A flagged product keeps its penalties but **forfeits every bonus**. The asymmetry is
 deliberate: bad data should not be able to buy points, but it should not buy an escape from the
 penalties the plausible figures already earned either. The warning is shown to the user.
+
+### 5.1.2 Energy
+
+Energy is reported twice: per 100 g or 100 ml as the label states it, and for the whole
+package. The second figure is the one people reason with — "539 kcal per 100 g" means little,
+"the jar is 5390 kcal" means a great deal — and it is always labelled with the package size it
+was derived from so it can never be mistaken for a serving.
+
+The package total is also expressed as a share of the **2000 kcal** daily reference intake used
+on EU front-of-pack labels (Regulation 1169/2011, Annex XIII). The UI states that this is a
+labelling reference for an average adult, not a personal target.
+
+Net quantity arrives as free text written by whoever entered the product, so parsing it is
+conservative: it handles `1 kg`, `375 g`, `200g`, `50 G`, `330 ml`, `33 cl`, decimal commas
+(`1,5 L`), the EU estimated sign (`300 g e`, `℮`) and multipacks (`6 x 33 cl`). Non-metric units
+and unreadable text produce no package figure at all, because a wrong package size yields a
+confidently wrong calorie count.
 
 ### 5.2 Nutrient thresholds
 
