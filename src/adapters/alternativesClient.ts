@@ -17,11 +17,12 @@
  */
 
 import { searchCategories, type AlternativeCandidate } from '../core/alternatives.js';
+import { safeProducerUrl } from '../core/links.js';
 import type { Nutriments } from '../core/types.js';
 import fixtures from '../fixtures/alternatives.json' with { type: 'json' };
 
 const BASE = 'https://world.openfoodfacts.org/cgi/search.pl';
-const FIELDS = 'code,product_name,brands,quantity,nutriscore_grade,nova_group,nutriments';
+const FIELDS = 'code,product_name,brands,quantity,link,nutriscore_grade,nova_group,nutriments';
 const PAGE_SIZE = 12;
 const TIMEOUT_MS = 6000;
 const CACHE_PREFIX = 'label-lens:alts:v1:';
@@ -35,6 +36,7 @@ interface RawProduct {
   product_name?: string;
   brands?: string;
   quantity?: string;
+  link?: string;
   nutriscore_grade?: string;
   nova_group?: number | string;
   nutriments?: Record<string, unknown>;
@@ -75,6 +77,8 @@ function toCandidate(raw: RawProduct): AlternativeCandidate | undefined {
     candidate.nutriScore = grade;
   }
   if (nova === 1 || nova === 2 || nova === 3 || nova === 4) candidate.novaGroup = nova;
+  const producerUrl = safeProducerUrl(raw.link);
+  if (producerUrl) candidate.producerUrl = producerUrl;
   return candidate;
 }
 

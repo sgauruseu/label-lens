@@ -32,7 +32,8 @@ yourself. Label Lens does — in about five seconds, with no backend, no account
   These produce flags, never score adjustments, so a rule you care about is never averaged away.
 - **Finds something better in the same category.** Nutella scores 22; the app offers three
   hazelnut spreads with a *sixteenth* of the sugar and no salt at all. Tap one to run the full
-  verdict on it.
+  verdict on it, or follow the link to its Open Food Facts page — and to the producer's own
+  site when the database has one, which for most products it does not.
 - **Compares two products** side by side.
 - **Reads a label from a photo** when a product is not in the database, using your own API key.
 - **Works with no network at all** on a bundled set of real products.
@@ -91,7 +92,7 @@ Dependencies point inward only: `ui → adapters → core`. An ESLint rule fails
 anything in `core/` imports an adapter, a component, React, or touches a browser global — the
 purity of the domain is enforced, not merely intended.
 
-That boundary is what makes the scoring engine testable: **228 unit tests, 99 % line coverage**
+That boundary is what makes the scoring engine testable: **242 unit tests, 99 % line coverage**
 on `src/core`, running in a plain Node environment with no DOM and no network.
 
 ## Running it
@@ -126,6 +127,21 @@ it when you are done.
 
 The model is only ever asked to transcribe the printed panel into structured fields. It never
 scores anything — that stays in `core/`, where the rules are visible and tested.
+
+## Links, and one thing the app refuses to do
+
+Every product carries a link to its **Open Food Facts page** — that is where the data came from,
+and it is how anyone can check the app is not inventing figures.
+
+The **producer's own site** appears only when the database actually holds one. Of the four
+hazelnut spreads suggested instead of Nutella, none do. A URL is never constructed from a brand
+name: `damiano.com` guessed from "Damiano" points at a domain nobody verified, which at best is
+wrong and at worst is squatted. A missing link is a smaller failure than a confidently wrong one.
+
+That field is filled in by strangers, so its value is validated before it ever reaches an
+`href`: anything that is not a plain `http`/`https` URL is dropped. A `javascript:` link in a
+crowd-sourced field is a script-injection vector, and this is the exact boundary where untrusted
+data becomes something a person clicks.
 
 ## Privacy
 

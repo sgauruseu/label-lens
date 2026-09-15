@@ -16,8 +16,42 @@ import {
   fetchCandidates,
 } from '../adapters/alternativesClient.js';
 import { rankAlternatives, type Alternative } from '../core/alternatives.js';
+import { linkHost, openFoodFactsUrl } from '../core/links.js';
 import { humanizeTag } from '../core/normalize.js';
 import type { Product } from '../core/types.js';
+
+/**
+ * The two links that can sit under a product.
+ *
+ * The Open Food Facts page is derived from the barcode and always exists — it is where the data
+ * came from, and linking to it is how someone checks the app is not inventing figures. The
+ * producer's own page is shown only when the database actually has one; it is never guessed
+ * from a brand name, because a URL nobody verified is worse than no URL.
+ */
+export function ProductLinks({
+  barcode,
+  producerUrl,
+}: {
+  barcode: string;
+  producerUrl?: string;
+}) {
+  const source = openFoodFactsUrl(barcode);
+  if (!source && !producerUrl) return null;
+  return (
+    <div className="links">
+      {producerUrl && (
+        <a className="link producer" href={producerUrl} target="_blank" rel="noreferrer noopener">
+          {linkHost(producerUrl)} ↗
+        </a>
+      )}
+      {source && (
+        <a className="link" href={source} target="_blank" rel="noreferrer noopener">
+          Open Food Facts ↗
+        </a>
+      )}
+    </div>
+  );
+}
 
 interface State {
   status: 'idle' | 'loading' | 'done' | 'error';
@@ -117,6 +151,12 @@ export function Alternatives({
                       </span>
                     ))}
                   </div>
+                  <ProductLinks
+                    barcode={alternative.barcode}
+                    {...(alternative.producerUrl !== undefined
+                      ? { producerUrl: alternative.producerUrl }
+                      : {})}
+                  />
                 </div>
                 <button
                   type="button"

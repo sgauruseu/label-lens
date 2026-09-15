@@ -66,6 +66,8 @@ export interface Product {
   /** Net quantity parsed into a number, when the label text could be read. */
   packageSize?: PackageSize;
   imageUrl?: string;
+  /** The producer's own page, when the database has one and it validated. Often absent. */
+  producerUrl?: string;
   kind: ProductKind;
   /** Category tags as the database holds them, general to specific. Used to find alternatives. */
   categoryTags: string[];

@@ -27,6 +27,8 @@ export interface AlternativeCandidate {
   nutriScore?: 'a' | 'b' | 'c' | 'd' | 'e';
   novaGroup?: 1 | 2 | 3 | 4;
   nutriments: Nutriments;
+  /** The producer's own page, when the database has one. Usually it does not. */
+  producerUrl?: string;
 }
 
 /** A candidate that beat the scanned product, with the reasons it did. */

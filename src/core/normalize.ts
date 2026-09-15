@@ -10,6 +10,7 @@
  */
 
 import { lookupAdditives } from './additives.js';
+import { safeProducerUrl } from './links.js';
 import { parseQuantity } from './quantity.js';
 import type { IngredientAnalysis, Nutriments, Product, ProductKind } from './types.js';
 
@@ -23,6 +24,7 @@ export interface OffProduct {
   quantity?: string;
   image_front_small_url?: string;
   image_front_url?: string;
+  link?: string;
   nutriscore_grade?: string;
   nova_group?: number | string;
   ingredients_text?: string;
@@ -210,6 +212,7 @@ export function normalizeProduct(
 
   const nutriments = readNutriments(off.nutriments);
   const packageSize = parseQuantity(off.quantity);
+  const producerUrl = safeProducerUrl(off.link);
 
   return {
     barcode: off.code ?? '',
@@ -218,6 +221,7 @@ export function normalizeProduct(
     quantity: off.quantity?.trim() || undefined,
     ...(packageSize ? { packageSize } : {}),
     imageUrl: off.image_front_small_url ?? off.image_front_url,
+    ...(producerUrl ? { producerUrl } : {}),
     kind: detectKind(off.categories_tags),
     categoryTags: off.categories_tags ?? [],
     nutriments,

@@ -803,3 +803,33 @@ select {
   padding: 2px 9px;
   white-space: nowrap;
 }
+
+/* ---------- outbound links ---------- */
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.link {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 10px;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.link:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.link.producer {
+  border-color: var(--border-strong);
+  color: var(--text);
+}

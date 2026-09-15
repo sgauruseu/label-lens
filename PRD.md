@@ -59,6 +59,7 @@ Three properties define the product:
 | F12 | AI ingredient reading from a photo | Bring-your-own API key; parses an ingredient list into the same engine |
 | F13 | Energy per 100 g **and per package** | Net quantity parsed from the label text; package total shown against the EU reference intake |
 | F14 | Better alternatives in the same category | Legacy search endpoint (the only CORS-capable one), loaded on demand, cached, with a bundled fallback |
+| F15 | Source and producer links | Open Food Facts page always; the producer's own site only when the database has one, never guessed, and validated before rendering |
 
 ### Explicitly out of scope
 
@@ -151,6 +152,23 @@ Hence: on demand rather than on every scan, cached per session, at most two live
 walking from the most specific category upward (a leaf category such as
 `confectionary-based-spreads` holds a handful of products where `hazelnut-spreads` holds
 thousands), and a bundled fallback set so the feature survives the meeting-room wifi.
+
+### 5.1.4 Links
+
+Two links can sit under a product, and they differ in kind.
+
+The **Open Food Facts page** is derived from the barcode, so it always exists. It is the source
+of the data, the place to check the app against, and the honest attribution for ODbL data.
+
+The **producer's page** comes from the crowd-sourced `link` field. Measured on six real
+products: Nutella and Coca-Cola have one, and none of the four suggested alternatives do. It is
+shown when present, omitted when absent, and **never constructed from a brand name** — a URL
+nobody verified is worse than no URL at all.
+
+Because that field is written by strangers, its value is validated before rendering: only
+`http` and `https` survive, a hostname must contain a dot, and everything else is dropped. A
+`javascript:` value in an `href` is a script-injection vector, and this is precisely the
+boundary where untrusted data becomes a link someone clicks.
 
 ### 5.2 Nutrient thresholds
 

@@ -7,7 +7,7 @@
  */
 
 import { REFERENCE_INTAKE_KCAL, summarizeEnergy } from '../core/energy.js';
-import { Alternatives } from './Alternatives.js';
+import { Alternatives, ProductLinks } from './Alternatives.js';
 import { formatPackageSize } from '../core/quantity.js';
 import type {
   Additive,
@@ -270,6 +270,10 @@ export function VerdictView({
                 </span>
               )}
             </div>
+            <ProductLinks
+              barcode={product.barcode}
+              {...(product.producerUrl !== undefined ? { producerUrl: product.producerUrl } : {})}
+            />
           </div>
           {!verdict.lowData && <ScoreRing score={verdict.score} band={verdict.band} />}
         </div>

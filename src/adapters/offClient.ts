@@ -25,6 +25,7 @@ const FIELDS = [
   'quantity',
   'image_front_small_url',
   'image_front_url',
+  'link',
   'nutriscore_grade',
   'nova_group',
   'ingredients_text',
