@@ -10,6 +10,7 @@
 
 import { assessNutrients } from './thresholds.js';
 import type {
+  NutrientAssessment,
   Product,
   Profile,
   ProfileFlag,
@@ -58,6 +59,21 @@ const FRUIT_BONUS_THRESHOLD = 40;
 /** Formats an amount for display without trailing zeros: `5`, `5.3`, `22.5`. */
 function fmt(value: number): string {
   return Number(value.toFixed(1)).toString();
+}
+
+/**
+ * "Fat is in the high band" but "Sugars are in the high band". Two of the four front-of-pack
+ * nutrient names are plural, so the verb has to follow the name.
+ */
+const IS_PLURAL: Record<NutrientAssessment['key'], boolean> = {
+  fat: false,
+  saturates: true,
+  sugars: true,
+  salt: false,
+};
+
+function verb(key: NutrientAssessment['key']): string {
+  return IS_PLURAL[key] ? 'are' : 'is';
 }
 
 /**
@@ -154,13 +170,13 @@ export function evaluate(product: Product, profile: Profile): Verdict {
     if (n.level === 'amber' && n.value !== undefined) {
       nutrientContributions.push({
         id: `nutrient:${n.key}:amber`,
-        label: `${n.label} is in the medium band (${fmt(n.value)} g per 100 ${unit}).`,
+        label: `${n.label} ${verb(n.key)} in the medium band (${fmt(n.value)} g per 100 ${unit}).`,
         points: AMBER_PENALTY,
       });
     } else if (n.level === 'red' && n.value !== undefined) {
       nutrientContributions.push({
         id: `nutrient:${n.key}:red`,
-        label: `${n.label} is in the high band (${fmt(n.value)} g per 100 ${unit}).`,
+        label: `${n.label} ${verb(n.key)} in the high band (${fmt(n.value)} g per 100 ${unit}).`,
         points: RED_PENALTY,
       });
     }

@@ -95,6 +95,19 @@ describe('evaluate — nutrient penalties', () => {
     expect(contribution?.label).toContain('per 100 g');
   });
 
+  it.each([
+    ['fat', 'Fat is in the high band'],
+    ['saturates', 'Saturates are in the high band'],
+    ['sugars', 'Sugars are in the high band'],
+    ['salt', 'Salt is in the high band'],
+  ] as const)('agrees the verb with the %s label', (key, expected) => {
+    const product = makeProduct({ nutriments: { [key]: 99 } });
+    const contribution = evaluate(product, neutral).contributions.find((c) =>
+      c.id.startsWith(`nutrient:${key}`),
+    );
+    expect(contribution?.label).toContain(expected);
+  });
+
   it('labels drink amounts per 100 ml', () => {
     const product = makeProduct({ kind: 'drink', nutriments: { sugars: 12 } });
     const contribution = evaluate(product, neutral).contributions.find((c) =>

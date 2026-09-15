@@ -65,7 +65,7 @@ Dependencies point inward only: `ui → adapters → core`. An ESLint rule fails
 anything in `core/` imports an adapter, a component, React, or touches a browser global — the
 purity of the domain is enforced, not merely intended.
 
-That boundary is what makes the scoring engine testable: **151 unit tests, 99 % line coverage**
+That boundary is what makes the scoring engine testable: **155 unit tests, 99 % line coverage**
 on `src/core`, running in a plain Node environment with no DOM and no network.
 
 ## Running it

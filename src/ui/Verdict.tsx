@@ -155,7 +155,18 @@ export function VerdictView({
 
       <div className="card">
         <div className="verdict-head">
-          {product.imageUrl && <img className="thumb" src={product.imageUrl} alt="" />}
+          {product.imageUrl && (
+            <img
+              className="thumb"
+              src={product.imageUrl}
+              alt=""
+              // Open Food Facts images are hotlinked and occasionally 404. An empty white box
+              // looks like a rendering bug, so a broken image removes itself instead.
+              onError={(event) => {
+                event.currentTarget.hidden = true;
+              }}
+            />
+          )}
           <div className="verdict-title">
             <h2>{product.name}</h2>
             <div className="faint">

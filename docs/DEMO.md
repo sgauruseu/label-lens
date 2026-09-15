@@ -90,7 +90,7 @@ Switch to the repository tab.
 > "Two and a half days, built with Claude Code. Three layers: a pure domain core with no
 > network, no DOM, no clock; adapters for everything impure; a thin UI.
 >
-> That boundary is enforced by a lint rule, not by good intentions — and it is what made **151
+> That boundary is enforced by a lint rule, not by good intentions — and it is what made **155
 > unit tests at 99 % coverage** on the scoring engine possible in two days.
 >
 > Every push runs typecheck, lint, tests and build, then deploys to GitHub Pages. No backend,
