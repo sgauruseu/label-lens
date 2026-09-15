@@ -67,6 +67,8 @@ export interface Product {
   packageSize?: PackageSize;
   imageUrl?: string;
   kind: ProductKind;
+  /** Category tags as the database holds them, general to specific. Used to find alternatives. */
+  categoryTags: string[];
   nutriments: Nutriments;
   additives: Additive[];
   ingredientsText?: string;

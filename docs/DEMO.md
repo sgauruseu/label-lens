@@ -79,7 +79,17 @@ Now type `7622210449283` (Prince biscuits). Point at the amber warning:
 
 **This is the slide that says the project is real.** Do not cut it.
 
-## 3:00 — 3:50 · The one with no barcode
+## 3:00 — 3:20 · What to buy instead
+
+Back on the Nutella verdict, press **Find better alternatives**.
+
+> "And this is the part that matters in a supermarket. Same category, ranked by the official
+> Nutri-Score: three hazelnut spreads with a sixteenth of the sugar, no salt, and not
+> ultra-processed. Tap one and it scans it properly."
+
+Do not linger. The list speaks for itself.
+
+## 3:20 — 3:50 · The one with no barcode
 
 Hold up the own-label product.
 

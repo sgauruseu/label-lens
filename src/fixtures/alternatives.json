@@ -1,0 +1,10 @@
+{
+  "hazelnut-spreads": [
+    {"code":"8002352750581","product_name":"Nocciola","brands":"Damiano","quantity":"750 g","nutriscore_grade":"a","nova_group":1,"nutriments":{"energy-kcal_100g":703,"sugars_100g":3.6,"fat_100g":66.7,"saturated-fat_100g":4.2,"salt_100g":0}},
+    {"code":"5400113706373","product_name":"Noisettes à tartiner","brands":"Delhaize","quantity":"250 g","nutriscore_grade":"a","nova_group":1,"nutriments":{"energy-kcal_100g":655,"sugars_100g":4.3,"fat_100g":61,"saturated-fat_100g":4.5,"salt_100g":0.01}},
+    {"code":"5060323907641","product_name":"Hazelnut butter","brands":"Hillfield","quantity":"330 g","nutriscore_grade":"a","nova_group":1,"nutriments":{"energy-kcal_100g":667,"sugars_100g":4.9,"fat_100g":53,"saturated-fat_100g":4.1,"salt_100g":0}},
+    {"code":"3347430018630","product_name":"Purée noisette cacao","brands":"Moulin des Moines","quantity":"200 g","nutriscore_grade":"a","nova_group":3,"nutriments":{"energy-kcal_100g":628,"sugars_100g":3.7,"fat_100g":55.9,"saturated-fat_100g":4.6,"salt_100g":0.017}},
+    {"code":"4260701921042","product_name":"Protein cream Vegan","brands":"Foodspring","quantity":"200 g","nutriscore_grade":"a","nova_group":2,"nutriments":{"energy-kcal_100g":530,"sugars_100g":4,"fat_100g":44,"saturated-fat_100g":4.8,"salt_100g":0.13}},
+    {"code":"8018699024391","product_name":"Crema cacao e nocciole","brands":"Probios","quantity":"200 g","nutriscore_grade":"b","nova_group":4,"nutriments":{"energy-kcal_100g":486,"sugars_100g":1.6,"fat_100g":42,"saturated-fat_100g":5.9,"salt_100g":0.012}}
+  ]
+}

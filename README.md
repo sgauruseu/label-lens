@@ -30,6 +30,9 @@ yourself. Label Lens does — in about five seconds, with no backend, no account
   status rather than a health opinion.
 - **Your own rules.** Palm oil, added sugar, vegan, vegetarian, low salt, specific E-numbers.
   These produce flags, never score adjustments, so a rule you care about is never averaged away.
+- **Finds something better in the same category.** Nutella scores 22; the app offers three
+  hazelnut spreads with a *sixteenth* of the sugar and no salt at all. Tap one to run the full
+  verdict on it.
 - **Compares two products** side by side.
 - **Reads a label from a photo** when a product is not in the database, using your own API key.
 - **Works with no network at all** on a bundled set of real products.
@@ -61,6 +64,20 @@ still applying its penalties.
 **This is not medical or dietary advice.** It is a transparent arithmetic summary of published
 reference values, and the app says so on the verdict screen.
 
+### Two things the network taught us
+
+Both were established by testing, not by reading documentation, and both changed the design:
+
+- **The modern `/api/v2/search` sends no CORS headers**, and neither does
+  `search.openfoodfacts.org`. From a static page they are unusable. The legacy `/cgi/search.pl`
+  does allow cross-origin requests, so that is what the alternatives feature uses.
+- **Search is rate-limited far harder than product lookup.** Two searches in quick succession
+  already fail. So the feature loads on demand rather than on every scan, caches every result
+  for the session, walks from the most specific category up when a leaf category is too thin,
+  and falls back to a bundled set — which is why it still works with the network unplugged.
+
+![Better alternatives to a jar of Nutella](docs/screenshots/alternatives.png)
+
 ## Architecture
 
 ```
@@ -74,7 +91,7 @@ Dependencies point inward only: `ui → adapters → core`. An ESLint rule fails
 anything in `core/` imports an adapter, a component, React, or touches a browser global — the
 purity of the domain is enforced, not merely intended.
 
-That boundary is what makes the scoring engine testable: **198 unit tests, 99 % line coverage**
+That boundary is what makes the scoring engine testable: **228 unit tests, 99 % line coverage**
 on `src/core`, running in a plain Node environment with no DOM and no network.
 
 ## Running it

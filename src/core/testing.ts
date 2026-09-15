@@ -14,6 +14,7 @@ export const EMPTY_PRODUCT: Product = {
   barcode: '0000000000000',
   name: 'Test product',
   kind: 'solid',
+  categoryTags: [],
   nutriments: {},
   additives: [],
   analysis: {},

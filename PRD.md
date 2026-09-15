@@ -58,6 +58,7 @@ Three properties define the product:
 | F11 | Offline fixture mode | Bundled real product responses; app fully usable with no network |
 | F12 | AI ingredient reading from a photo | Bring-your-own API key; parses an ingredient list into the same engine |
 | F13 | Energy per 100 g **and per package** | Net quantity parsed from the label text; package total shown against the EU reference intake |
+| F14 | Better alternatives in the same category | Legacy search endpoint (the only CORS-capable one), loaded on demand, cached, with a bundled fallback |
 
 ### Explicitly out of scope
 
@@ -129,6 +130,27 @@ conservative: it handles `1 kg`, `375 g`, `200g`, `50 G`, `330 ml`, `33 cl`, dec
 (`1,5 L`), the EU estimated sign (`300 g e`, `℮`) and multipacks (`6 x 33 cl`). Non-metric units
 and unreadable text produce no package figure at all, because a wrong package size yields a
 confidently wrong calorie count.
+
+### 5.1.3 Alternatives
+
+Scoring a product at 22 is half an answer; the other half is what to buy instead. The app
+searches the same category and offers up to three products that are **strictly better**.
+
+They are ranked by the **official Nutri-Score, not by the Label Score**. The search endpoint
+returns a summary with gaps, and computing our own score from partial data would be a confident
+number built on absences. The card says which scale it is using, and tapping a suggestion runs
+the full lookup and the real verdict.
+
+Two network facts, both established by testing, shaped the implementation:
+
+- `/api/v2/search` and `search.openfoodfacts.org` send **no CORS headers** and are unusable from
+  a static page. The legacy `/cgi/search.pl` works.
+- Search is rate-limited far harder than product lookup — two in quick succession already fail.
+
+Hence: on demand rather than on every scan, cached per session, at most two live attempts
+walking from the most specific category upward (a leaf category such as
+`confectionary-based-spreads` holds a handful of products where `hazelnut-spreads` holds
+thousands), and a bundled fallback set so the feature survives the meeting-room wifi.
 
 ### 5.2 Nutrient thresholds
 

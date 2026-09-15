@@ -219,6 +219,7 @@ export function normalizeProduct(
     ...(packageSize ? { packageSize } : {}),
     imageUrl: off.image_front_small_url ?? off.image_front_url,
     kind: detectKind(off.categories_tags),
+    categoryTags: off.categories_tags ?? [],
     nutriments,
     dataWarnings: detectDataWarnings(nutriments),
     additives: lookupAdditives(off.additives_tags ?? []),

@@ -7,6 +7,7 @@
  */
 
 import { REFERENCE_INTAKE_KCAL, summarizeEnergy } from '../core/energy.js';
+import { Alternatives } from './Alternatives.js';
 import { formatPackageSize } from '../core/quantity.js';
 import type {
   Additive,
@@ -199,12 +200,18 @@ export function VerdictView({
   product,
   verdict,
   offline,
+  offlineMode,
   fallbackReason,
+  onOpenBarcode,
 }: {
   product: Product;
   verdict: VerdictType;
+  /** This particular product came from cache or a fixture. */
   offline?: boolean;
+  /** The user switched offline mode on, which is a different thing entirely. */
+  offlineMode: boolean;
   fallbackReason?: string;
+  onOpenBarcode: (barcode: string) => void;
 }) {
   const unit = product.kind === 'drink' ? 'ml' : 'g';
 
@@ -326,6 +333,8 @@ export function VerdictView({
           </div>
         </div>
       )}
+
+      <Alternatives product={product} offline={offlineMode} onOpen={onOpenBarcode} />
 
       {product.additives.length > 0 && (
         <div className="card">

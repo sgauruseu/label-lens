@@ -225,6 +225,12 @@ export function App() {
               product={loaded.product}
               verdict={verdict}
               offline={loaded.offline}
+              offlineMode={settings.offlineMode}
+              onOpenBarcode={(code) => {
+                setBarcode(code);
+                void search(code);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               {...(loaded.fallbackReason !== undefined
                 ? { fallbackReason: loaded.fallbackReason }
                 : {})}
