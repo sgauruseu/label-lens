@@ -283,8 +283,12 @@ export function VerdictView({
 
       {verdict.lowData && (
         <div className="notice">
-          This product has no nutrition table in the database, so there is not enough data to
-          score it. The additives and ingredients below are still accurate.
+          {/* Where the gap came from decides what the reader should do about it. A database
+              entry with no nutrition table is nobody's fault; a photo with no nutrition table
+              is usually a photo of the front of the pack, and retaking it fixes everything. */}
+          {product.source === 'ai-photo'
+            ? 'No nutrition table was readable in this photo, so there is not enough data to score the product. Photograph the back of the pack, where the per-100 g table is printed, and fill the frame with it. The name, additives and ingredients below were read correctly.'
+            : 'This product has no nutrition table in the database, so there is not enough data to score it. The additives and ingredients below are still accurate.'}
         </div>
       )}
 

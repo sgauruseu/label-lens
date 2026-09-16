@@ -16,7 +16,10 @@ import type { Product } from '../core/types.js';
 import type { Settings } from './storage.js';
 
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
-const ANTHROPIC_MODEL = 'claude-sonnet-4-5';
+// Model IDs are retired on a schedule, and a retired one fails with a 400 that reads exactly
+// like a billing problem. If the photo feature starts returning 400 for everyone at once, this
+// line is the first thing to check against the provider's current model list.
+const ANTHROPIC_MODEL = 'claude-sonnet-5';
 const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
 const OPENAI_MODEL = 'gpt-4o-mini';
 
@@ -52,6 +55,36 @@ export class AiError extends Error {
     super(message);
     this.name = 'AiError';
   }
+}
+
+/**
+ * Turns a failed provider response into a message that names the actual problem.
+ *
+ * Both providers put a usable sentence in the error body — "credit balance is too low",
+ * "invalid x-api-key", "model not found". Replacing all of them with "check your API key" sends
+ * the user to look at the one thing that is usually fine, so the body is shown as it came.
+ */
+async function providerError(response: Response): Promise<AiError> {
+  const detail = await response
+    .text()
+    .then((body) => {
+      const parsed: unknown = JSON.parse(body);
+      const message =
+        typeof parsed === 'object' && parsed !== null
+          ? (parsed as { error?: { message?: unknown } }).error?.message
+          : undefined;
+      return typeof message === 'string' ? message : body.slice(0, 200);
+    })
+    .catch(() => '');
+
+  const hint =
+    response.status === 401
+      ? ' The key is wrong, or was copied with a space.'
+      : response.status === 429
+        ? ' You have hit the rate limit — wait a moment and try again.'
+        : '';
+
+  return new AiError(`The provider refused the request (${response.status}). ${detail}${hint}`);
 }
 
 /** Strips a code fence if the model added one anyway, then parses. */
@@ -105,9 +138,7 @@ async function callAnthropic(dataUrl: string, apiKey: string): Promise<string> {
     }),
   });
 
-  if (!response.ok) {
-    throw new AiError(`The model provider returned ${response.status}. Check your API key.`);
-  }
+  if (!response.ok) throw await providerError(response);
   const json = (await response.json()) as { content?: { type: string; text?: string }[] };
   const text = json.content?.find((block) => block.type === 'text')?.text;
   if (!text) throw new AiError('The model returned an empty response.');
@@ -133,9 +164,7 @@ async function callOpenAi(dataUrl: string, apiKey: string): Promise<string> {
     }),
   });
 
-  if (!response.ok) {
-    throw new AiError(`The model provider returned ${response.status}. Check your API key.`);
-  }
+  if (!response.ok) throw await providerError(response);
   const json = (await response.json()) as { choices?: { message?: { content?: string } }[] };
   const text = json.choices?.[0]?.message?.content;
   if (!text) throw new AiError('The model returned an empty response.');
