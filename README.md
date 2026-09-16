@@ -34,7 +34,9 @@ yourself. Label Lens does — in about five seconds, with no backend, no account
   hazelnut spreads with a *sixteenth* of the sugar and no salt at all. Tap one to run the full
   verdict on it, or follow the link to its Open Food Facts page — and to the producer's own
   site when the database has one, which for most products it does not.
-- **Compares two products** side by side.
+- **Compares two products** side by side. The scan history can be cleared in one go, or an
+  entry at a time; the sample barcodes on the Scan screen fold away and can be removed
+  individually, except the two the demo script depends on.
 - **Reads a label from a photo** when a product is not in the database, using your own API key.
 - **Works with no network at all** on a bundled set of real products.
 
@@ -92,8 +94,50 @@ Dependencies point inward only: `ui → adapters → core`. An ESLint rule fails
 anything in `core/` imports an adapter, a component, React, or touches a browser global — the
 purity of the domain is enforced, not merely intended.
 
-That boundary is what makes the scoring engine testable: **242 unit tests, 99 % line coverage**
+That boundary is what makes the scoring engine testable: **252 unit tests, 99 % line coverage**
 on `src/core`, running in a plain Node environment with no DOM and no network.
+
+## Testing
+
+Two layers, each answering a different question.
+
+**252 unit tests** on `src/core` ask *is the rule right?* — every threshold, every boundary
+value, every cap, in Node with no DOM and no network.
+
+**33 UI tests** (Playwright, in `tests/`) ask *did it reach the screen?* — they drive the real
+**production build**, not the dev server, so what they exercise is the artefact that gets
+deployed. Every one runs with **offline mode seeded into `localStorage` before the app boots**,
+so the suite asserts on fixed, known products and can never go red because Open Food Facts was
+slow or a contributor edited a value. A UI suite that fails for reasons unrelated to the code is
+a suite people learn to ignore.
+
+Several assertions exist because the bug happened, and they are marked as such in the files:
+the card once read *"Saturates **is** in the high band"*; a suggestion once boasted *"100 % less
+salt"* instead of *"no salt"*; the category picker once compared a jar of Nutella against a leaf
+category holding four products. Those are exactly the failures unit tests cannot see, because
+each of them was correct arithmetic rendered into a wrong sentence.
+
+```bash
+npm test           # unit tests
+npm run test:ui    # UI tests (builds, serves, drives a real browser)
+npm run test:wdio  # the same tests again, in WebdriverIO (testrunner mode)
+npm run test:standalone  # …and again, WebdriverIO as a plain library under Mocha
+```
+
+### Two UI suites, on purpose
+
+`testing/spec/` holds a **second** UI suite covering 15 of the same cases in WebdriverIO +
+Mocha + Page Objects, written in plain JavaScript. It exists to answer a question with
+measurements rather than opinion: what do the same tests cost in each tool?
+
+Those 15 tests run **two ways from the same files** — under the WebdriverIO testrunner, and
+under plain Mocha with WebdriverIO used as a library (standalone mode, configured from
+`testing/browser.properties`). One set of Page Objects serves all three suites.
+
+Short answer, on this project: a third of the lines and a third of the runtime in Playwright,
+against genuinely better reach in WebdriverIO — real Safari, real devices, any WebDriver grid.
+The full comparison, including both WebdriverIO modes and the bugs each one produced, is in
+**[docs/WEBDRIVERIO-VS-PLAYWRIGHT.md](docs/WEBDRIVERIO-VS-PLAYWRIGHT.md)**.
 
 ## Running it
 
@@ -105,16 +149,23 @@ npm run dev        # http://localhost:5173
 ```bash
 npm test           # unit tests
 npm run coverage   # unit tests with a 90 % threshold on src/core
+npm run test:ui    # UI tests in a real browser, against the production build
 npm run typecheck  # tsc, strict
 npm run lint       # eslint, including the architecture boundary rule
 npm run build      # production build into dist/
 ```
 
+The UI tests need a browser once: `npx playwright install chromium`. They serve the build on
+port 4800; set `UI_TEST_PORT` if that is taken — on Windows, Hyper-V reserves whole blocks of
+ports and binding inside one fails with `EACCES` even when nothing is listening
+(`netsh interface ipv4 show excludedportrange protocol=tcp` lists them).
+
 Node 22 or newer.
 
 ## Deployment
 
-Pushing to `main` runs typecheck, lint, tests and build, then publishes `dist/` to GitHub Pages.
+Pushing to `main` runs typecheck, lint, unit tests, build and the UI suite, then publishes
+`dist/` to GitHub Pages — the deploy waits for both test jobs.
 `VITE_BASE` is set from the repository name in CI, so a fork under a different name deploys
 correctly without editing anything.
 
@@ -127,6 +178,11 @@ it when you are done.
 
 The model is only ever asked to transcribe the printed panel into structured fields. It never
 scores anything — that stays in `core/`, where the rules are visible and tested.
+
+There is no save button: the key is written to storage as it is typed. A provider error is shown
+with the provider's own wording, because "check your API key" sends people to inspect the one
+thing that is usually correct — a 400 is far more often an empty credit balance or a model ID
+that has since been retired.
 
 ## Links, and one thing the app refuses to do
 
@@ -163,3 +219,9 @@ Code is MIT licensed — see [LICENSE](LICENSE).
 
 Specification in [PRD.md](PRD.md); the working agreement the AI agent followed is in
 [CLAUDE.md](CLAUDE.md); the demo script is in [docs/DEMO.md](docs/DEMO.md).
+
+
+## How this was built with an AI agent
+
+See **[docs/AI-METHOD.md](docs/AI-METHOD.md)** — the field report on method, prompts,
+verification, and every bug the checks caught.

@@ -83,6 +83,13 @@ export function pushHistory(product: Product, now: number = Date.now()): History
   return next;
 }
 
+/** Drops one scan by barcode and returns what is left. */
+export function removeFromHistory(barcode: string): HistoryEntry[] {
+  const next = loadHistory().filter((entry) => entry.product.barcode !== barcode);
+  write(HISTORY_KEY, JSON.stringify(next));
+  return next;
+}
+
 export function clearHistory(): void {
   remove(HISTORY_KEY);
 }
@@ -93,12 +100,18 @@ export interface Settings {
   /** The user's own API key. Never transmitted anywhere except the model provider. */
   apiKey: string;
   provider: 'anthropic' | 'openai';
+  /** Sample barcodes the user has removed from the Scan screen. */
+  hiddenSamples: string[];
+  /** Whether the "Try:" row is folded away. */
+  samplesCollapsed: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   offlineMode: false,
   apiKey: '',
   provider: 'anthropic',
+  hiddenSamples: [],
+  samplesCollapsed: false,
 };
 
 export function loadSettings(): Settings {
@@ -107,6 +120,11 @@ export function loadSettings(): Settings {
     offlineMode: typeof raw.offlineMode === 'boolean' ? raw.offlineMode : false,
     apiKey: typeof raw.apiKey === 'string' ? raw.apiKey : '',
     provider: raw.provider === 'openai' ? 'openai' : 'anthropic',
+    // Stored by an earlier version, or edited by hand: keep only the strings.
+    hiddenSamples: Array.isArray(raw.hiddenSamples)
+      ? raw.hiddenSamples.filter((code): code is string => typeof code === 'string')
+      : [],
+    samplesCollapsed: typeof raw.samplesCollapsed === 'boolean' ? raw.samplesCollapsed : false,
   };
 }
 

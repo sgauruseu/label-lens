@@ -227,6 +227,58 @@ select {
   color: var(--text);
 }
 
+/* The code and its close icon read as one control, so they share a pill outline. */
+.chip-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.chip-group .chip {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: 0;
+}
+
+.chip-toggle {
+  align-self: center;
+  margin-right: 4px;
+  background: transparent;
+  border: 0;
+  color: var(--text-dim);
+  font-size: 12px;
+  padding: 5px 2px;
+}
+
+.chip-toggle:hover {
+  color: var(--text);
+}
+
+.chip-close {
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-dim);
+  border-radius: 999px;
+  /* Square off the joined edge so the pair looks like one pill, not two. */
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  padding: 5px 9px;
+  font-size: 13px;
+  line-height: 1;
+  /* A 24px target is below the comfortable minimum, so the hit area is padded out. */
+  min-height: 26px;
+}
+
+.chip-close:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.history-item .chip-close {
+  flex: none;
+  border-radius: 999px;
+  margin-left: 4px;
+}
+
 /* ---------- verdict ---------- */
 
 .verdict-head {

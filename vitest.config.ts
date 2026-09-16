@@ -8,6 +8,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     environment: 'node',
+    // Only the unit tests. The Playwright suite in tests/ runs under its own runner.
     include: ['src/**/*.test.ts'],
     globals: true,
     coverage: {

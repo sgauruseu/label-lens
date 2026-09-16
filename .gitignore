@@ -10,3 +10,12 @@ tsconfig.app.tsbuildinfo
 
 # Screenshots dropped in the repo root by hand
 /label-lens-*.png
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/.playwright/
+
+# WebdriverIO
+/logs/

@@ -21,12 +21,14 @@ import {
   loadProfile,
   loadSettings,
   pushHistory,
+  removeFromHistory,
   saveProfile,
   saveSettings,
   type HistoryEntry,
   type Settings,
 } from '../adapters/storage.js';
 import { REGISTER_SIZE } from '../core/additives.js';
+import { canHideSample, hideSample, visibleSamples } from '../core/samples.js';
 import { evaluate } from '../core/score.js';
 import type { Product, Profile } from '../core/types.js';
 import { Compare } from './Compare.js';
@@ -131,7 +133,13 @@ export function App() {
               key={item.id}
               type="button"
               aria-current={screen === item.id}
-              onClick={() => setScreen(item.id)}
+              onClick={() => {
+                // An error belongs to the attempt that produced it. Leaving it on screen while
+                // the user goes to Settings to fix the very thing it complains about makes the
+                // app look broken after it has been repaired.
+                setError(null);
+                setScreen(item.id);
+              }}
             >
               {item.label}
             </button>
@@ -166,22 +174,58 @@ export function App() {
             </form>
 
             <div className="chips">
-              <span className="faint" style={{ alignSelf: 'center', marginRight: 4 }}>
-                Try:
-              </span>
-              {FIXTURE_BARCODES.map((code) => (
+              <button
+                type="button"
+                className="chip-toggle"
+                aria-expanded={!settings.samplesCollapsed}
+                onClick={() =>
+                  setSettings({ ...settings, samplesCollapsed: !settings.samplesCollapsed })
+                }
+              >
+                Try: <span aria-hidden="true">{settings.samplesCollapsed ? '▸' : '▾'}</span>
+              </button>
+              {!settings.samplesCollapsed &&
+                visibleSamples(FIXTURE_BARCODES, settings.hiddenSamples).map((code) => (
+                  <span className="chip-group" key={code}>
+                    <button
+                      type="button"
+                      className="chip"
+                      onClick={() => {
+                        setBarcode(code);
+                        void search(code);
+                      }}
+                    >
+                      {code}
+                    </button>
+                    {/* Two of these carry the demo. Removing one by a stray tap on stage is not
+                        a mistake anybody recovers from gracefully, so they have no close icon. */}
+                    {canHideSample(code) && (
+                      <button
+                        type="button"
+                        className="chip-close"
+                        aria-label={`Remove ${code} from the examples`}
+                        title="Remove this example"
+                        onClick={() =>
+                          setSettings({
+                            ...settings,
+                            hiddenSamples: hideSample(settings.hiddenSamples, code),
+                          })
+                        }
+                      >
+                        ×
+                      </button>
+                    )}
+                  </span>
+                ))}
+              {!settings.samplesCollapsed && settings.hiddenSamples.length > 0 && (
                 <button
-                  key={code}
                   type="button"
                   className="chip"
-                  onClick={() => {
-                    setBarcode(code);
-                    void search(code);
-                  }}
+                  onClick={() => setSettings({ ...settings, hiddenSamples: [] })}
                 >
-                  {code}
+                  Restore removed
                 </button>
-              ))}
+              )}
             </div>
 
             <div style={{ marginTop: 16 }}>
@@ -278,6 +322,15 @@ export function App() {
                     >
                       Open
                     </button>
+                    <button
+                      type="button"
+                      className="chip-close"
+                      aria-label={`Remove ${entry.product.name} from history`}
+                      title="Remove from history"
+                      onClick={() => setHistory(removeFromHistory(entry.product.barcode))}
+                    >
+                      ×
+                    </button>
                   </div>
                 );
               })
@@ -292,7 +345,7 @@ export function App() {
                   setHistory([]);
                 }}
               >
-                Clear history
+                Clear all ({history.length})
               </button>
             )}
           </div>
@@ -420,6 +473,13 @@ export function App() {
                 onChange={(event) => setSettings({ ...settings, apiKey: event.target.value })}
               />
             </div>
+            {/* There is no Save button — the key is written as it is typed — so the screen has
+                to say so, or the user is left looking for one. */}
+            <p className="muted" style={{ marginBottom: 0, fontSize: 13 }}>
+              {settings.apiKey.trim()
+                ? 'Key saved on this device. Nothing else to press — go to Scan.'
+                : 'Saved as you type. There is no save button.'}
+            </p>
           </div>
 
           <div style={{ marginTop: 20 }}>
